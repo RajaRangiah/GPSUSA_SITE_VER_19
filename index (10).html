@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPSUSA.ai — Economic Governance for AI Inference</title>
+<meta name="description" content="An adaptive economic runtime for AI inference. Continuously sensing workload drift, reforming inference cells, and enforcing economics in real time — with the operator on the loop.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0d12;
+    --ink-2: #11151c;
+    --ink-3: #181d26;
+    --line: #232a36;
+    --line-2: #2e3645;
+    --text: #e8e6df;
+    --text-dim: #9aa0aa;
+    --text-mute: #6b7280;
+    --gold: #c9a449;
+    --gold-soft: #b8954a;
+    --green: #5ea579;
+    --red: #c25450;
+    --paper: #f4f1ea;
+    --serif: 'Fraunces', 'Times New Roman', serif;
+    --sans: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* —— top ticker —— */
+  .ticker {
+    border-bottom: 1px solid var(--line);
+    background: var(--ink-2);
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 8px 0;
+    letter-spacing: 0.02em;
+  }
+  .ticker-track {
+    display: inline-block;
+    animation: scroll 60s linear infinite;
+  }
+  .ticker-item { padding: 0 2.5rem; }
+  .ticker-item .tk-label { color: var(--text-mute); }
+  .ticker-item .tk-val { color: var(--text); margin-left: 0.5rem; }
+  .ticker-item .tk-up { color: var(--green); }
+  .ticker-item .tk-dn { color: var(--red); }
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* —— nav —— */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10, 13, 18, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 1.1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.4rem;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .logo .dot { color: var(--gold); }
+  .logo .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 400;
+    color: var(--text-mute);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-left: 0.4rem;
+    border-left: 1px solid var(--line-2);
+    padding-left: 0.6rem;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.2rem;
+    align-items: center;
+  }
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--gold);
+    color: var(--ink) !important;
+    padding: 0.55rem 1.1rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    font-family: var(--sans);
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--gold-soft); }
+
+  /* —— hero —— */
+  .hero {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 5.5rem 2rem 4.5rem;
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 4rem;
+    align-items: end;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+  }
+  h1.headline {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(2.6rem, 5.4vw, 4.7rem);
+    line-height: 1.02;
+    letter-spacing: -0.022em;
+    margin-bottom: 1.8rem;
+    color: var(--text);
+  }
+  h1.headline em {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 400;
+  }
+  .lede {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    max-width: 38rem;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .lede strong { color: var(--text); font-weight: 500; }
+  .hero-cta-row {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--ink);
+    padding: 0.95rem 1.6rem;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .btn-primary:hover { background: var(--gold-soft); }
+  .btn-primary::after { content: '→'; font-family: var(--mono); }
+  .btn-ghost {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 0.95rem 1.4rem;
+    border: 1px solid var(--line-2);
+    transition: border 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* —— hero side: KPI panel —— */
+  .kpi-panel {
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--ink-2), var(--ink-3));
+    padding: 1.5rem;
+    position: relative;
+  }
+  .kpi-panel::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 22px; height: 22px;
+    border-top: 1px solid var(--gold);
+    border-left: 1px solid var(--gold);
+  }
+  .kpi-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 22px; height: 22px;
+    border-bottom: 1px solid var(--gold);
+    border-right: 1px solid var(--gold);
+  }
+  .kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 1.2rem;
+  }
+  .kpi-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+  .live-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 0.1em;
+  }
+  .live-dot::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(94, 165, 121, 0.7); }
+    50% { opacity: 0.5; box-shadow: 0 0 0 6px rgba(94, 165, 121, 0); }
+  }
+  .kpi-rows { display: flex; flex-direction: column; gap: 0.9rem; }
+  .kpi-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px dotted var(--line);
+  }
+  .kpi-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .kpi-label-block .kpi-name {
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+  }
+  .kpi-label-block .kpi-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-mute);
+    letter-spacing: 0.08em;
+  }
+  .kpi-val-block { text-align: right; }
+  .kpi-val {
+    font-family: var(--mono);
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .kpi-delta {
+    font-family: var(--mono);
+    font-size: 10px;
+    margin-top: 0.1rem;
+  }
+  .kpi-delta.up { color: var(--green); }
+  .kpi-delta.dn { color: var(--red); }
+
+  /* —— section primitives —— */
+  section {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 5.5rem 2rem;
+    position: relative;
+  }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(2rem, 3.6vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.018em;
+    margin-bottom: 1.4rem;
+    max-width: 40rem;
+  }
+  h2 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .section-lede {
+    color: var(--text-dim);
+    max-width: 44rem;
+    font-size: 1.02rem;
+    line-height: 1.65;
+    margin-bottom: 3rem;
+  }
+  .section-lede strong { color: var(--text); font-weight: 500; }
+
+  .divider-row {
+    border-top: 1px solid var(--line);
+    padding-top: 2.2rem;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 4rem;
+  }
+  .divider-row .left-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding-top: 0.5rem;
+  }
+
+  /* —— problem framing —— */
+  .lie-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+  .lie-card, .truth-card {
+    padding: 2.2rem 2rem;
+    border: 1px solid var(--line);
+    position: relative;
+  }
+  .lie-card { background: var(--ink-2); opacity: 0.9; }
+  .truth-card {
+    background: linear-gradient(180deg, rgba(201, 164, 73, 0.05), transparent);
+    border-color: var(--gold-soft);
+  }
+  .lie-card .card-tag, .truth-card .card-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .lie-card .card-tag { color: var(--red); }
+  .truth-card .card-tag { color: var(--gold); }
+  .card-title {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+  }
+  .lie-card .card-title { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 1px; }
+  .card-body { color: var(--text-dim); font-size: 0.95rem; line-height: 1.65; }
+  .card-body strong { color: var(--text); font-weight: 500; }
+
+  /* —— CR(N) chart section —— */
+  .chart-wrap {
+    border: 1px solid var(--line);
+    background: var(--ink-2);
+    padding: 2.5rem;
+    margin-top: 1rem;
+  }
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  .chart-title-block .chart-title {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 400;
+    margin-bottom: 0.3rem;
+  }
+  .chart-title-block .chart-sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.1em;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .legend-swatch {
+    width: 14px; height: 2px;
+  }
+  .legend-swatch.gold { background: var(--gold); }
+  .legend-swatch.red { background: var(--red); border-top: 1px dashed var(--red); height: 0; border-bottom: 1px dashed var(--red); }
+  .chart-body {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .chart-svg-wrap {
+    position: relative;
+    width: 100%;
+  }
+  .chart-readout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+  }
+  .readout-block {
+    border-left: 1px solid var(--line);
+    padding-left: 1.2rem;
+  }
+  .readout-block.gold { border-left-color: var(--gold); border-left-width: 2px; }
+  .readout-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .readout-value {
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--text);
+  }
+  .readout-value.gold { color: var(--gold); }
+  .readout-unit {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 0.4rem;
+    letter-spacing: 0.08em;
+  }
+  .chart-footnote {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dotted var(--line);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+  }
+
+  /* —— architecture stack —— */
+  .stack-wrap {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-top: 1rem;
+  }
+  .stack-cell {
+    background: var(--ink-2);
+    padding: 2rem 1.5rem;
+    position: relative;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: background 0.3s;
+  }
+  .stack-cell:hover { background: var(--ink-3); }
+  .stack-layer-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.9rem;
+  }
+  .stack-cell-name {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 400;
+    margin-bottom: 0.6rem;
+    line-height: 1.15;
+  }
+  .stack-cell-desc {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }
+  .stack-cell-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.08em;
+    padding-top: 0.8rem;
+    border-top: 1px dotted var(--line-2);
+  }
+  .stack-cell-tag strong { color: var(--gold); font-weight: 500; }
+
+  .flow-arrows {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.7rem 0 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.15em;
+  }
+  .flow-arrows span { flex: 1; text-align: center; }
+
+  /* —— business impact —— */
+  .impact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-top: 1rem;
+  }
+  .impact-cell {
+    background: var(--ink-2);
+    padding: 2.2rem 1.8rem;
+  }
+  .impact-num {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.02em;
+  }
+  .impact-title {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+    color: var(--text);
+  }
+  .impact-desc {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  /* —— defensibility / patents —— */
+  .moat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 4rem;
+    align-items: start;
+    margin-top: 1rem;
+  }
+  .moat-marks {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .patent-mark {
+    border: 1px solid var(--line-2);
+    background: linear-gradient(135deg, rgba(201, 164, 73, 0.04), transparent);
+    padding: 1.8rem 1.6rem;
+    position: relative;
+  }
+  .patent-mark::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--gold);
+  }
+  .patent-mark-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.7rem;
+    text-transform: uppercase;
+  }
+  .patent-mark-title {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+    line-height: 1.2;
+    color: var(--text);
+  }
+  .patent-mark-desc {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .patent-mark-desc strong { color: var(--text); }
+
+  .moat-content h3 {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 1.3rem;
+  }
+  .moat-content h3 em { font-style: italic; color: var(--gold); }
+  .moat-content p { color: var(--text-dim); margin-bottom: 1.1rem; font-size: 0.98rem; line-height: 1.65; }
+  .moat-content p strong { color: var(--text); font-weight: 500; }
+
+  /* —— ICP —— */
+  .icp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+  .icp-card {
+    border: 1px solid var(--line);
+    padding: 1.8rem;
+    background: var(--ink-2);
+  }
+  .icp-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  .icp-name {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+  }
+  .icp-desc { color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
+
+  /* —— final CTA —— */
+  .final-cta {
+    background: var(--ink-2);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-top: 4rem;
+  }
+  .final-cta-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .final-cta h2 {
+    font-size: clamp(2.2rem, 4vw, 3.3rem);
+    line-height: 1.05;
+    margin-bottom: 1.2rem;
+  }
+  .final-cta .lede { font-size: 1.05rem; }
+
+  .cta-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .cta-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid var(--line);
+    background: var(--ink);
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .cta-option:hover {
+    border-color: var(--gold);
+    background: var(--ink-3);
+  }
+  .cta-option-text {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  .cta-option-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.1em;
+    margin-top: 0.2rem;
+  }
+  .cta-option-arrow {
+    font-family: var(--mono);
+    color: var(--gold);
+    font-size: 1.2rem;
+  }
+
+  /* —— footer —— */
+  footer {
+    background: var(--ink);
+    padding: 3.5rem 2rem 2rem;
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+  .foot-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .foot-brand .logo { margin-bottom: 1rem; }
+  .foot-brand p {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.65;
+    max-width: 26rem;
+  }
+  .foot-col h4 {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+  .foot-col ul { list-style: none; }
+  .foot-col ul li { padding: 0.35rem 0; }
+  .foot-col a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  .foot-col a:hover { color: var(--gold); }
+  .foot-contact {
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px dotted var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .foot-contact-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-mute);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .foot-contact-val {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .foot-contact-val:hover { color: var(--gold); }
+  .foot-bottom {
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.1em;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  /* —— operating model (human-on-the-loop) —— */
+  .operating-model-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    margin-top: 1rem;
+    align-items: stretch;
+  }
+  .opmodel-panel {
+    border: 1px solid var(--line);
+    background: var(--ink-2);
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .opmodel-today {
+    border-right: none;
+  }
+  .opmodel-future {
+    border-left: none;
+    background: linear-gradient(180deg, rgba(201, 164, 73, 0.04), var(--ink-2));
+    border-color: var(--gold-soft);
+  }
+  .opmodel-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .opmodel-today .opmodel-tag { color: var(--text-mute); }
+  .opmodel-title {
+    font-family: var(--serif);
+    font-size: 1.55rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    color: var(--text);
+    line-height: 1.15;
+  }
+  .opmodel-divider {
+    height: 1px;
+    background: var(--line);
+    margin-bottom: 1.2rem;
+  }
+  .opmodel-future .opmodel-divider { background: var(--gold-soft); opacity: 0.35; }
+  .opmodel-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .opmodel-list li {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 1rem;
+    align-items: baseline;
+  }
+  .opmodel-list-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-mute);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding-top: 0.1rem;
+  }
+  .opmodel-list-val {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+  .opmodel-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.2rem;
+    min-width: 100px;
+    position: relative;
+  }
+  .opmodel-arrow-line {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--text-mute), var(--gold));
+    position: relative;
+  }
+  .opmodel-arrow-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-mute);
+    letter-spacing: 0.2em;
+    margin-top: 0.6rem;
+  }
+  .opmodel-arrow-tip {
+    font-family: var(--mono);
+    color: var(--gold);
+    font-size: 1.3rem;
+    margin-top: 0.3rem;
+    line-height: 1;
+  }
+
+  /* —— contact modal —— */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 7, 10, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open {
+    display: flex;
+    opacity: 1;
+  }
+  .modal {
+    background: var(--ink-2);
+    border: 1px solid var(--line-2);
+    width: 100%;
+    max-width: 580px;
+    max-height: 92vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 2.5rem 2.2rem;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 24px; height: 24px;
+    border-top: 1px solid var(--gold);
+    border-left: 1px solid var(--gold);
+  }
+  .modal::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 24px; height: 24px;
+    border-bottom: 1px solid var(--gold);
+    border-right: 1px solid var(--gold);
+  }
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 32px; height: 32px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .modal-close:hover { color: var(--gold); border-color: var(--gold); }
+  .modal-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+  }
+  .modal-title {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+  .modal-sub {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    margin-bottom: 1.6rem;
+  }
+  .modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .modal-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+  .modal-field {
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-field label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .modal-field label .req { color: var(--gold); margin-left: 0.2rem; }
+  .modal-field input,
+  .modal-field textarea {
+    background: var(--ink);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.92rem;
+    font-weight: 300;
+    padding: 0.7rem 0.85rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .modal-field input:focus,
+  .modal-field textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: var(--ink-3);
+  }
+  .modal-field textarea {
+    resize: vertical;
+    min-height: 96px;
+    font-family: var(--sans);
+  }
+  .modal-actions {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .modal-submit {
+    background: var(--gold);
+    color: var(--ink);
+    padding: 0.85rem 1.4rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .modal-submit:hover { background: var(--gold-soft); }
+  .modal-submit::after { content: '→'; font-family: var(--mono); }
+  .modal-fallback {
+    border-top: 1px solid var(--line);
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+  }
+  .modal-fallback-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-mute);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+  .modal-fallback-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .modal-fallback-row a {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .modal-fallback-row a:hover { color: var(--gold); }
+  .modal-fallback-copy {
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    transition: color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .modal-fallback-copy:hover { color: var(--gold); }
+  .copy-hint {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .modal-fallback-copy.copied .copy-hint { color: var(--green); }
+  .modal-status {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.03em;
+    line-height: 1.5;
+    min-height: 0;
+    transition: color 0.2s;
+  }
+  .modal-status.error {
+    color: var(--red);
+    padding: 0.6rem 0;
+  }
+  .modal-status.info {
+    color: var(--text-dim);
+    padding: 0.6rem 0;
+  }
+  .modal-success {
+    display: none;
+    text-align: center;
+    padding: 1.5rem 0 0.5rem;
+  }
+  .modal-success.show { display: block; }
+  .modal-success-mark {
+    font-family: var(--serif);
+    font-size: 3rem;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+    line-height: 1;
+  }
+  .modal-success-title {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin-bottom: 0.8rem;
+    color: var(--text);
+  }
+  .modal-success-body {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    max-width: 26rem;
+    margin: 0 auto;
+  }
+
+  /* —— scroll reveal —— */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* —— responsive —— */
+  @media (max-width: 1024px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .moat-grid, .final-cta-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .stack-wrap { grid-template-columns: 1fr 1fr; }
+    .impact-grid { grid-template-columns: 1fr 1fr; }
+    .icp-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+    .divider-row { grid-template-columns: 1fr; gap: 1rem; }
+    .chart-body { grid-template-columns: 1fr; }
+    .flow-arrows { display: none; }
+    .operating-model-grid { grid-template-columns: 1fr; gap: 0; }
+    .opmodel-today { border-right: 1px solid var(--line); border-bottom: none; }
+    .opmodel-future { border-left: 1px solid var(--gold-soft); border-top: none; }
+    .opmodel-arrow {
+      flex-direction: row;
+      width: 100%;
+      padding: 1.2rem 0;
+      min-width: 0;
+      gap: 1rem;
+    }
+    .opmodel-arrow-line {
+      width: 1px;
+      height: 30px;
+      background: linear-gradient(180deg, var(--text-mute), var(--gold));
+    }
+    .opmodel-arrow-label { margin-top: 0; }
+    .opmodel-arrow-tip { margin-top: 0; transform: rotate(90deg); }
+  }
+  @media (max-width: 640px) {
+    .nav-links a:not(.nav-cta) { display: none; }
+    .lie-grid { grid-template-columns: 1fr; }
+    .stack-wrap { grid-template-columns: 1fr; }
+    .impact-grid { grid-template-columns: 1fr; }
+    .foot-grid { grid-template-columns: 1fr; }
+    section { padding: 3.5rem 1.25rem; }
+    .hero { padding: 3rem 1.25rem 2.5rem; }
+    .chart-wrap { padding: 1.5rem; }
+    .final-cta-inner { padding: 4rem 1.25rem; }
+    .modal { padding: 2rem 1.4rem; }
+    .modal-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="tk-label">FLEET TSD</span><span class="tk-val">3.47</span><span class="tk-up">▲ 0.12</span></span>
+    <span class="ticker-item"><span class="tk-label">COST / 1M TOK</span><span class="tk-val">$0.288</span><span class="tk-up">▲ 6.4%</span></span>
+    <span class="ticker-item"><span class="tk-label">FAIRNESS IDX</span><span class="tk-val">0.94</span><span class="tk-up">▲ 0.02</span></span>
+    <span class="ticker-item"><span class="tk-label">P99 LATENCY</span><span class="tk-val">412ms</span><span class="tk-dn">▼ 18ms</span></span>
+    <span class="ticker-item"><span class="tk-label">LEAKAGE</span><span class="tk-val">2.1%</span><span class="tk-dn">▼ 0.4%</span></span>
+    <span class="ticker-item"><span class="tk-label">GPU-SEC YIELD</span><span class="tk-val">0.71</span><span class="tk-up">▲ 0.03</span></span>
+    <span class="ticker-item"><span class="tk-label">CELL UTILIZATION</span><span class="tk-val">89.2%</span><span class="tk-up">▲ 1.1%</span></span>
+    <span class="ticker-item"><span class="tk-label">CAPEX IMPACT</span><span class="tk-val">$10M–$100M+</span></span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><span class="tk-label">FLEET TSD</span><span class="tk-val">3.47</span><span class="tk-up">▲ 0.12</span></span>
+    <span class="ticker-item"><span class="tk-label">COST / 1M TOK</span><span class="tk-val">$0.288</span><span class="tk-up">▲ 6.4%</span></span>
+    <span class="ticker-item"><span class="tk-label">FAIRNESS IDX</span><span class="tk-val">0.94</span><span class="tk-up">▲ 0.02</span></span>
+    <span class="ticker-item"><span class="tk-label">P99 LATENCY</span><span class="tk-val">412ms</span><span class="tk-dn">▼ 18ms</span></span>
+    <span class="ticker-item"><span class="tk-label">LEAKAGE</span><span class="tk-val">2.1%</span><span class="tk-dn">▼ 0.4%</span></span>
+    <span class="ticker-item"><span class="tk-label">GPU-SEC YIELD</span><span class="tk-val">0.71</span><span class="tk-up">▲ 0.03</span></span>
+    <span class="ticker-item"><span class="tk-label">CELL UTILIZATION</span><span class="tk-val">89.2%</span><span class="tk-up">▲ 1.1%</span></span>
+    <span class="ticker-item"><span class="tk-label">CAPEX IMPACT</span><span class="tk-val">$10M–$100M+</span></span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">GPSUSA<span class="dot">.</span>ai<span class="tag">Economic Governance · AI Inference</span></a>
+    <div class="nav-links">
+      <a href="#thesis">Thesis</a>
+      <a href="#economics">Economics</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#impact">Impact</a>
+      <a href="#defensibility">IP</a>
+      <a href="#cta" class="nav-cta">Executive Discussion</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Inference Economics · Runtime Governance</div>
+      <h1 class="headline">Most AI infrastructure is optimized for the <em>wrong metric.</em></h1>
+      <p class="lede">
+        Compute is scarce. HBM is scarce. Power is a bottleneck. And yet a large fraction of racked, paid-for GPU capacity is being quietly <strong>incinerated</strong> by unstable inference systems — fleets reporting 90% utilization while destroying economic throughput. GPSUSA.ai is an <strong>adaptive economic runtime for AI inference</strong> — continuously sensing workload drift, reforming inference cells, and enforcing its economics in real time, measured in <strong>tokens per second per dollar</strong>, with the operator on the loop.
+      </p>
+      <div class="hero-cta-row">
+        <a class="btn-primary" href="#cta">Request Strategic Assessment</a>
+        <a class="btn-ghost" href="#economics">See the Economics</a>
+      </div>
+    </div>
+
+    <aside class="kpi-panel">
+      <div class="kpi-header">
+        <span class="kpi-title">Fleet Reference Profile</span>
+        <span class="live-dot">ACTIVE</span>
+      </div>
+      <div class="kpi-rows">
+        <div class="kpi-row">
+          <div class="kpi-label-block">
+            <div class="kpi-name">Cost reduction</div>
+            <div class="kpi-sub">VS. UNMANAGED BASELINE</div>
+          </div>
+          <div class="kpi-val-block">
+            <div class="kpi-val">25–40%</div>
+            <div class="kpi-delta up">range across fleet sizes</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-label-block">
+            <div class="kpi-name">Tokens / sec / $</div>
+            <div class="kpi-sub">FLEET-WIDE TSD</div>
+          </div>
+          <div class="kpi-val-block">
+            <div class="kpi-val">+1.6×</div>
+            <div class="kpi-delta up">throughput per dollar</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-label-block">
+            <div class="kpi-name">Multi-tenant fairness</div>
+            <div class="kpi-sub">GPU-SEC YIELD INDEX</div>
+          </div>
+          <div class="kpi-val-block">
+            <div class="kpi-val">0.94</div>
+            <div class="kpi-delta up">pareto-stable</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-label-block">
+            <div class="kpi-name">Structural leakage</div>
+            <div class="kpi-sub">WASTE SIGNAL</div>
+          </div>
+          <div class="kpi-val-block">
+            <div class="kpi-val">2.1%</div>
+            <div class="kpi-delta up">from 14.6% baseline</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-label-block">
+            <div class="kpi-name">CapEx / OpEx impact</div>
+            <div class="kpi-sub">PER ENGAGEMENT RANGE</div>
+          </div>
+          <div class="kpi-val-block">
+            <div class="kpi-val">$10–$100M+</div>
+            <div class="kpi-delta up">500–5,000 GPU fleets</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</header>
+
+<!-- §1 THESIS / PROBLEM FRAMING -->
+<section id="thesis" class="reveal">
+  <div class="divider-row">
+    <div class="left-meta">§ 01 / Thesis</div>
+    <div>
+      <div class="section-eyebrow">The Economic Problem</div>
+      <h2>A busy GPU is not the same as a <em>profitable</em> one.</h2>
+      <p class="section-lede">
+        Production fleets routinely register 80–90% utilization while a quarter to nearly half of their capacity earns nothing — silently absorbed by stalled decodes, fragmented caches, and routing decisions that have no view of cost. The hardware is racked. The bill arrives. The dashboard smiles. And the economic throughput quietly disappears. Scaling more GPUs into that picture does not fix the picture. It enlarges it.
+      </p>
+
+      <div class="lie-grid">
+        <div class="lie-card">
+          <div class="card-tag">Activity Signal</div>
+          <h3 class="card-title">GPU Utilization %</h3>
+          <p class="card-body">
+            A useful operational signal — but not an economic one. High utilization can mean the fleet is producing revenue, or that it is stalled on KV-cache evictions, waiting on async hops, or serving long-tail decode workloads at negative margin. The number reports activity, not yield.
+          </p>
+        </div>
+        <div class="truth-card">
+          <div class="card-tag">Value Signal</div>
+          <h3 class="card-title">Tokens / Second / Dollar</h3>
+          <p class="card-body">
+            Throughput per dollar of capacity. <strong>TSD</strong> collapses utilization, latency, batching, and capital cost into one number a CFO and a CTO can both defend. Every routing, scheduling, and quota decision in the control plane is optimized against TSD per tenant, per workload class, per SLA tier.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §2 ECONOMICS / CR(N) CHART -->
+<section id="economics" class="reveal">
+  <div class="divider-row">
+    <div class="left-meta">§ 02 / Economics</div>
+    <div>
+      <div class="section-eyebrow">Fleet Cost Reduction Model</div>
+      <h2>The savings curve, <em>analytically derived.</em></h2>
+      <p class="section-lede">
+        Cost reduction is not a marketing claim. It is a function of fleet size, workload mix, and the structural overhead the control plane removes. The curve below is empirically validated across fleets from <strong>250 to 2,500 accelerators</strong> — the operational range most relevant to AI-native enterprises and independent GPU clouds today.
+      </p>
+
+      <div class="chart-wrap">
+        <div class="chart-header">
+          <div class="chart-title-block">
+            <div class="chart-title">CR(N) — Cost Reduction vs Fleet Size</div>
+            <div class="chart-sub">REFERENCE PROFILE · 500 GPU MIDPOINT</div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item"><span class="legend-swatch gold"></span> GPSUSA Governed</div>
+            <div class="legend-item"><span class="legend-swatch red"></span> Unmanaged Baseline</div>
+          </div>
+        </div>
+
+        <div class="chart-body">
+          <div class="chart-svg-wrap">
+            <svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+              <defs>
+                <linearGradient id="gradFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#c9a449" stop-opacity="0.32"/>
+                  <stop offset="100%" stop-color="#c9a449" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+
+              <!-- grid lines -->
+              <g stroke="#232a36" stroke-width="1">
+                <line x1="50" y1="40" x2="680" y2="40"/>
+                <line x1="50" y1="100" x2="680" y2="100"/>
+                <line x1="50" y1="160" x2="680" y2="160"/>
+                <line x1="50" y1="220" x2="680" y2="220"/>
+                <line x1="50" y1="280" x2="680" y2="280"/>
+                <line x1="50" y1="320" x2="680" y2="320"/>
+              </g>
+
+              <!-- y-axis labels -->
+              <g font-family="JetBrains Mono, monospace" font-size="10" fill="#6b7280">
+                <text x="42" y="44" text-anchor="end">50%</text>
+                <text x="42" y="104" text-anchor="end">40%</text>
+                <text x="42" y="164" text-anchor="end">30%</text>
+                <text x="42" y="224" text-anchor="end">20%</text>
+                <text x="42" y="284" text-anchor="end">10%</text>
+                <text x="42" y="324" text-anchor="end">0%</text>
+              </g>
+
+              <!-- x-axis labels (log) -->
+              <g font-family="JetBrains Mono, monospace" font-size="10" fill="#6b7280">
+                <text x="50" y="345" text-anchor="middle">250</text>
+                <text x="208" y="345" text-anchor="middle">500</text>
+                <text x="365" y="345" text-anchor="middle">1,000</text>
+                <text x="522" y="345" text-anchor="middle">1,500</text>
+                <text x="680" y="345" text-anchor="middle">2,500</text>
+              </g>
+
+              <!-- x-axis title -->
+              <text x="365" y="358" font-family="Inter, sans-serif" font-size="9" fill="#9aa0aa" text-anchor="middle" letter-spacing="0.15em">FLEET SIZE — N ACCELERATORS</text>
+
+              <!-- baseline (unmanaged) line, dashed -->
+              <line x1="50" y1="320" x2="680" y2="320" stroke="#c25450" stroke-width="1.2" stroke-dasharray="5 4" opacity="0.6"/>
+              <text x="55" y="313" font-family="JetBrains Mono, monospace" font-size="9" fill="#c25450" opacity="0.75">UNMANAGED — UTILIZATION ALONE</text>
+
+              <!-- savings curve area (fills below the line) -->
+              <!-- curve hits: 250→26%, 500→33%, 1000→37%, 1500→39%, 2500→41% -->
+              <!-- y = 320 - (pct*6) e.g. 26% → 320-156 = 164 -->
+              <path d="M 50 164
+                       Q 130 132, 208 122
+                       Q 290 110, 365 102
+                       Q 445 96, 522 94
+                       Q 600 92, 680 86
+                       L 680 320 L 50 320 Z" fill="url(#gradFill)"/>
+
+              <!-- savings curve line -->
+              <path d="M 50 164
+                       Q 130 132, 208 122
+                       Q 290 110, 365 102
+                       Q 445 96, 522 94
+                       Q 600 92, 680 86" fill="none" stroke="#c9a449" stroke-width="2.5"/>
+
+              <!-- annotation: 500-GPU reference point -->
+              <line x1="208" y1="122" x2="208" y2="320" stroke="#c9a449" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
+              <circle cx="208" cy="122" r="6" fill="#c9a449" stroke="#0a0d12" stroke-width="2"/>
+              <circle cx="208" cy="122" r="13" fill="none" stroke="#c9a449" stroke-width="1" opacity="0.35"/>
+
+              <!-- callout box for reference point -->
+              <g transform="translate(228, 60)">
+                <rect x="0" y="0" width="160" height="58" fill="#11151c" stroke="#c9a449" stroke-width="1"/>
+                <text x="12" y="20" font-family="JetBrains Mono, monospace" font-size="9" fill="#6b7280" letter-spacing="0.1em">REFERENCE · 500 GPU</text>
+                <text x="12" y="42" font-family="Fraunces, serif" font-size="20" fill="#c9a449" font-weight="400">33% reduction</text>
+              </g>
+              <line x1="214" y1="122" x2="228" y2="89" stroke="#c9a449" stroke-width="1" opacity="0.6"/>
+
+              <!-- y-axis title -->
+              <text x="-160" y="20" transform="rotate(-90)" font-family="Inter, sans-serif" font-size="9" fill="#9aa0aa" letter-spacing="0.15em">COST REDUCTION — CR(N)</text>
+            </svg>
+
+            <div class="chart-footnote">
+              CR(N) derived from fleet-wide TSD telemetry. Reduction scales sub-linearly with N as control-plane overhead amortizes across larger fleets. Range reflects observed performance across H100 / B200 hybrid deployments and validated against the GPSUSA simulator.
+            </div>
+          </div>
+
+          <div class="chart-readout">
+            <div class="readout-block gold">
+              <div class="readout-label">At 500 GPUs</div>
+              <div class="readout-value gold">33%</div>
+              <div class="readout-unit">FLEET COST REDUCTION</div>
+            </div>
+            <div class="readout-block">
+              <div class="readout-label">At 250 GPUs</div>
+              <div class="readout-value">26%</div>
+              <div class="readout-unit">ENTRY-RANGE PERFORMANCE</div>
+            </div>
+            <div class="readout-block">
+              <div class="readout-label">At 2,500 GPUs</div>
+              <div class="readout-value">41%</div>
+              <div class="readout-unit">LARGE-FLEET AMORTIZATION</div>
+            </div>
+            <div class="readout-block">
+              <div class="readout-label">TSD Lift</div>
+              <div class="readout-value">+1.6×</div>
+              <div class="readout-unit">TOKENS / SECOND / DOLLAR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §3 ARCHITECTURE -->
+<section id="architecture" class="reveal">
+  <div class="divider-row">
+    <div class="left-meta">§ 03 / Architecture</div>
+    <div>
+      <div class="section-eyebrow">The Causal Stack</div>
+      <h2>Model → Runtime → Scheduler → Cost → <em>Governance.</em></h2>
+      <p class="section-lede">
+        Five layers, one closed loop. Each layer is instrumented for TSD. Each layer is enforceable at runtime. Each layer answers to the layer above through policy — not tribal process, not after-the-fact dashboards, not heroic on-call engineering.
+      </p>
+
+      <div class="stack-wrap">
+        <div class="stack-cell">
+          <div>
+            <div class="stack-layer-num">L1 · MODEL</div>
+            <div class="stack-cell-name">Demand Shaping</div>
+            <div class="stack-cell-desc">Workload similarity, KV footprint, predicted output length, SLA class — turned into a multi-objective distance function the scheduler can actually act on.</div>
+          </div>
+          <div class="stack-cell-tag">Workload-aware routing input</div>
+        </div>
+        <div class="stack-cell">
+          <div>
+            <div class="stack-layer-num">L2 · RUNTIME</div>
+            <div class="stack-cell-name">Mechanics</div>
+            <div class="stack-cell-desc">Batching, concurrency, KV-cache tiering across HBM / SRAM / host, prefill-decode overlap, persistent kernels, async hop yield re-queuing.</div>
+          </div>
+          <div class="stack-cell-tag">Decode stall reduction</div>
+        </div>
+        <div class="stack-cell">
+          <div>
+            <div class="stack-layer-num">L3 · SCHEDULER</div>
+            <div class="stack-cell-name">Allocation</div>
+            <div class="stack-cell-desc">Cell-formation routing, GPU-second fairness, priority tiers, noisy-neighbor suppression, admission gating on cost-regime signals.</div>
+          </div>
+          <div class="stack-cell-tag">Multi-tenant isolation</div>
+        </div>
+        <div class="stack-cell">
+          <div>
+            <div class="stack-layer-num">L4 · COST</div>
+            <div class="stack-cell-name">Unit Economics</div>
+            <div class="stack-cell-desc">Per-tenant, per-model, per-feature attribution. Tokens-per-second-per-dollar at the workload class. Cost envelopes defensible to finance.</div>
+          </div>
+          <div class="stack-cell-tag">CFO-defensible attribution</div>
+        </div>
+        <div class="stack-cell">
+          <div>
+            <div class="stack-layer-num">L5 · GOVERNANCE</div>
+            <div class="stack-cell-name">Enforcement</div>
+            <div class="stack-cell-desc">Quotas, isolation, cost ceilings, SLO guardrails enforced at runtime. Policy drift detected automatically — not surfaced in a postmortem.</div>
+          </div>
+          <div class="stack-cell-tag">Closed-loop, continuous</div>
+        </div>
+      </div>
+      <div class="flow-arrows">
+        <span>↓ DEMAND</span>
+        <span>↓ MECHANICS</span>
+        <span>↓ ALLOCATION</span>
+        <span>↓ ECONOMICS</span>
+        <span>↻ POLICY</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §4 OPERATING MODEL — HUMAN ON THE LOOP -->
+<section id="operating-model" class="reveal">
+  <div class="divider-row">
+    <div class="left-meta">§ 04 / Operating Model</div>
+    <div>
+      <div class="section-eyebrow">Adaptive · Operator-Governed</div>
+      <h2>Human-on-the-loop today. <em>Fully autonomous tomorrow.</em></h2>
+      <p class="section-lede">
+        Today, GPSUSA.ai runs as a <strong>human-on-the-loop adaptive runtime</strong>. The operator sets the economic envelopes, fairness rules, SLA tiers, and admission policies. Within those envelopes, the system senses workload drift, reforms inference cells, and reorganizes the fleet topology continuously — but always under operator authority, with full observability and override at every layer.
+      </p>
+      <p class="section-lede">
+        On a deliberate trajectory toward <strong>fully autonomous inference governance</strong>, validated at scale, for the next generation of AI infrastructure. Lab results to date are promising; production validation is staged, deliberate, and operator-supervised. The path forward favors institutional trust over speed claims.
+      </p>
+
+      <div class="operating-model-grid">
+        <div class="opmodel-panel opmodel-today">
+          <div class="opmodel-tag">Today · Production</div>
+          <div class="opmodel-title">Human-on-the-Loop</div>
+          <div class="opmodel-divider"></div>
+          <ul class="opmodel-list">
+            <li><span class="opmodel-list-label">Operator</span><span class="opmodel-list-val">Sets envelopes, fairness rules, SLA tiers, admission policy</span></li>
+            <li><span class="opmodel-list-label">Runtime</span><span class="opmodel-list-val">Senses, reforms cells, reroutes, enforces economics within envelopes</span></li>
+            <li><span class="opmodel-list-label">Observability</span><span class="opmodel-list-val">Full telemetry, decision audit trail, real-time intervention</span></li>
+            <li><span class="opmodel-list-label">Override</span><span class="opmodel-list-val">Any policy, any cell, any tenant — at any time</span></li>
+          </ul>
+        </div>
+
+        <div class="opmodel-arrow" aria-hidden="true">
+          <div class="opmodel-arrow-line"></div>
+          <div class="opmodel-arrow-label">TRAJECTORY</div>
+          <div class="opmodel-arrow-tip">→</div>
+        </div>
+
+        <div class="opmodel-panel opmodel-future">
+          <div class="opmodel-tag">Trajectory · Validated at Scale</div>
+          <div class="opmodel-title">Fully Autonomous</div>
+          <div class="opmodel-divider"></div>
+          <ul class="opmodel-list">
+            <li><span class="opmodel-list-label">Operator</span><span class="opmodel-list-val">Strategic intent, business objectives, exception review</span></li>
+            <li><span class="opmodel-list-label">Runtime</span><span class="opmodel-list-val">Self-optimizing across regime changes, silicon mixes, tenant evolution</span></li>
+            <li><span class="opmodel-list-label">Validation</span><span class="opmodel-list-val">Staged, in-production, operator-supervised — never inferred from lab data alone</span></li>
+            <li><span class="opmodel-list-label">Adoption</span><span class="opmodel-list-val">Operator-controlled migration on a timeline the institution decides</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §5 BUSINESS IMPACT -->
+<section id="impact" class="reveal">
+  <div class="divider-row">
+    <div class="left-meta">§ 05 / Impact</div>
+    <div>
+      <div class="section-eyebrow">Outcomes That Reach The Board</div>
+      <h2>Economics, not <em>engineering anecdotes.</em></h2>
+      <p class="section-lede">
+        On 500 to 5,000+ GPU fleets, the architectural improvements translate to <strong>$10M–$100M+ in CapEx and OpEx impact</strong> — with zero hardware replacement. Every output of the control plane is a sentence a CFO or board director can say out loud: inference spend is down, fleet capacity is up, latency is stable, and the next hardware purchase order is — by design — smaller than the last one.
+      </p>
+
+      <div class="impact-grid">
+        <div class="impact-cell">
+          <div class="impact-num">25–40%</div>
+          <div class="impact-title">Reduced inference spend</div>
+          <div class="impact-desc">Driven by architectural modification, not headcount or hardware swap. The savings curve scales with fleet size.</div>
+        </div>
+        <div class="impact-cell">
+          <div class="impact-num">+1.6×</div>
+          <div class="impact-title">Effective fleet capacity</div>
+          <div class="impact-desc">Same accelerators, more revenue-bearing tokens per dollar. Deferred GPU purchases become a board-visible event.</div>
+        </div>
+        <div class="impact-cell">
+          <div class="impact-num">−31%</div>
+          <div class="impact-title">p99 latency tightening</div>
+          <div class="impact-desc">Tail latency falls under policy enforcement. Stable SLAs translate directly into customer retention.</div>
+        </div>
+        <div class="impact-cell">
+          <div class="impact-num">0.94</div>
+          <div class="impact-title">Tenant fairness index</div>
+          <div class="impact-desc">Pareto-stable yield across tenants. Multi-tenant inference stops collapsing under contention.</div>
+        </div>
+        <div class="impact-cell">
+          <div class="impact-num">2.1%</div>
+          <div class="impact-title">Structural leakage</div>
+          <div class="impact-desc">Down from a typical 12–15% baseline. Leakage becomes a budgetable line item, not an unknown.</div>
+        </div>
+        <div class="impact-cell">
+          <div class="impact-num">Zero</div>
+          <div class="impact-title">Hardware replacement required</div>
+          <div class="impact-desc">Improved economics on the fleet you already own. No vendor lock-in, no rip-and-replace risk.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §5 ICP — who this is for -->
+<section id="for-whom" class="reveal">
+  <div class="divider-row">
+    <div class="left-meta">§ 06 / Mandate</div>
+    <div>
+      <div class="section-eyebrow">Who This Is For</div>
+      <h2>Operators whose AI economics <em>already matter.</em></h2>
+      <p class="section-lede">
+        GPSUSA.ai is built for organizations where inference spend has graduated from line item to budget item — and where the next board meeting will ask whether the fleet is producing revenue, not whether it is busy.
+      </p>
+
+      <div class="icp-grid">
+        <div class="icp-card">
+          <div class="icp-tag">Operator Class 01</div>
+          <div class="icp-name">Independent GPU Clouds</div>
+          <div class="icp-desc">Multi-tenant inference operators competing on unit economics. The control plane converts utilization theater into defensible margin.</div>
+        </div>
+        <div class="icp-card">
+          <div class="icp-tag">Operator Class 02</div>
+          <div class="icp-name">AI-Native Enterprises in Financial Services</div>
+          <div class="icp-desc">Quant funds, trading firms, and risk platforms running inference at scale. The governance layer maps directly onto pre-existing capital allocation discipline.</div>
+        </div>
+        <div class="icp-card">
+          <div class="icp-tag">Operator Class 03</div>
+          <div class="icp-name">AI-Native Enterprises in Defense</div>
+          <div class="icp-desc">Mission-critical inference deployments where SLA stability and tenant isolation are non-negotiable. Silicon-neutral coverage spans heterogeneous fleets.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §6 DEFENSIBILITY / PATENTS -->
+<section id="defensibility" class="reveal">
+  <div class="divider-row">
+    <div class="left-meta">§ 07 / Defensibility</div>
+    <div>
+      <div class="section-eyebrow">Operational IP · Multiple Filings</div>
+      <h2>Savings the competition <em>cannot replicate.</em></h2>
+      <p class="section-lede">
+        GPSUSA.ai operates with <strong>multiple US patents pending</strong> across the workload-aware inference governance domain. The protection is structural — covering the underlying method rather than any specific GPU topology, vendor, or scheduler implementation. For the operator, this means the savings curve and the unit-economics lift are not a commodity capability a competitor can stand up next quarter.
+      </p>
+
+      <div class="moat-grid">
+        <div class="moat-marks">
+          <div class="patent-mark">
+            <div class="patent-mark-tag">Buyer Payoff · 01</div>
+            <div class="patent-mark-title">Durable Savings</div>
+            <div class="patent-mark-desc">
+              The cost reduction is protected against being eroded by a copycat platform. <strong>The economics you bank in Year 1 are still yours in Year 5</strong> — because the method that produced them is not freely available to your competitors.
+            </div>
+          </div>
+          <div class="patent-mark">
+            <div class="patent-mark-tag">Buyer Payoff · 02</div>
+            <div class="patent-mark-title">Silicon-Neutral Coverage</div>
+            <div class="patent-mark-desc">
+              The IP is framed for <strong>any AI accelerator</strong> — GPU, TPU, NPU, ASIC, FPGA, or heterogeneous fleet. Your savings travel with your hardware decisions. No vendor lock-in. No re-platforming risk if your fleet composition changes.
+            </div>
+          </div>
+          <div class="patent-mark">
+            <div class="patent-mark-tag">Buyer Payoff · 03</div>
+            <div class="patent-mark-title">Enterprise-Grade Defensibility</div>
+            <div class="patent-mark-desc">
+              The platform is built on operational IP, not open-source recipes. <strong>Procurement, legal, and board diligence find a defensible position</strong> — not a re-skinned commodity service.
+            </div>
+          </div>
+        </div>
+
+        <div class="moat-content">
+          <h3>Protection at the <em>method layer.</em></h3>
+          <p>
+            Most competing approaches to inference optimization protect — at best — a specific scheduler heuristic, a specific GPU topology, or a specific orchestration stack. Those are narrow positions, easy to redraw around, and easy to replicate with modest engineering effort.
+          </p>
+          <p>
+            <strong>GPSUSA's filings cover the underlying governance method.</strong> The protection is silicon-agnostic, fleet-agnostic, and vendor-agnostic — designed to remain durable as the accelerator landscape evolves over the next decade.
+          </p>
+          <p>
+            For an enterprise buyer, the question is not "what is inside the patent." The question is: <strong>will the economic advantage I am buying still be there in three years?</strong> The architecture of the IP is designed so that the answer is yes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div id="cta" class="final-cta">
+  <div class="final-cta-inner">
+    <div>
+      <div class="section-eyebrow">Engagement</div>
+      <h2>Begin with a single <em>diagnostic conversation.</em></h2>
+      <p class="lede">
+        GPSUSA.ai engagements begin with a strategic assessment of your inference economics — not a sales call. The output is a defensible reading of where your fleet stands on the TSD curve, what the structural waste looks like, and what governance the control plane would enforce first. Three entry points, depending on where you sit.
+      </p>
+    </div>
+
+    <div class="cta-options">
+      <button class="cta-option" type="button" data-modal-open data-intent="Strategic Assessment" data-audience="FOR CFOS / CEOS">
+        <div>
+          <div class="cta-option-text">Strategic Assessment</div>
+          <div class="cta-option-sub">FOR CFOS / CEOS</div>
+        </div>
+        <span class="cta-option-arrow">→</span>
+      </button>
+      <button class="cta-option" type="button" data-modal-open data-intent="Infrastructure Diagnostic" data-audience="FOR CTOS / HEADS OF INFRA">
+        <div>
+          <div class="cta-option-text">Infrastructure Diagnostic</div>
+          <div class="cta-option-sub">FOR CTOS / HEADS OF INFRA</div>
+        </div>
+        <span class="cta-option-arrow">→</span>
+      </button>
+      <button class="cta-option" type="button" data-modal-open data-intent="Executive Discussion" data-audience="FOR BOARD-LEVEL CONVERSATIONS">
+        <div>
+          <div class="cta-option-text">Executive Discussion</div>
+          <div class="cta-option-sub">FOR BOARD-LEVEL CONVERSATIONS</div>
+        </div>
+        <span class="cta-option-arrow">→</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a href="#" class="logo">GPSUSA<span class="dot">.</span>ai</a>
+      <p>Inference infrastructure that runs itself. Continuously sensing drift, reforming workload cells, and enforcing its own economics — in real time.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a href="#thesis">Thesis</a></li>
+        <li><a href="#economics">Economics</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#impact">Business Impact</a></li>
+        <li><a href="#defensibility">Defensibility</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Engage</h4>
+      <ul>
+        <li><a href="#" data-modal-open data-intent="Strategic Assessment" data-audience="FOR CFOS / CEOS">Strategic Assessment</a></li>
+        <li><a href="#" data-modal-open data-intent="Infrastructure Diagnostic" data-audience="FOR CTOS / HEADS OF INFRA">Infrastructure Diagnostic</a></li>
+        <li><a href="#" data-modal-open data-intent="Executive Discussion" data-audience="FOR BOARD-LEVEL CONVERSATIONS">Executive Discussion</a></li>
+      </ul>
+      <div class="foot-contact">
+        <div class="foot-contact-label">Direct</div>
+        <a href="#" data-modal-open data-intent="General Inquiry" data-audience="" class="foot-contact-val">admin@gpsusa.ai</a>
+        <a href="tel:+17184879738" class="foot-contact-val">+1 (718) 487-9738</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div>© 2026 GPSUSA.AI · ALL RIGHTS RESERVED</div>
+    <div>SAN JOSE · CA · USA</div>
+  </div>
+</footer>
+
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+  <div class="modal">
+    <button class="modal-close" type="button" id="modalCloseBtn" aria-label="Close">✕</button>
+    <div class="modal-eyebrow" id="modalEyebrow">Engagement</div>
+    <div class="modal-title" id="modalTitle">Strategic Assessment</div>
+    <div class="modal-sub" id="modalSub">Tell us a little about your fleet and the question you want answered. We respond within one business day.</div>
+
+    <form class="modal-form" id="contactForm">
+      <!-- Web3Forms wiring. Active access key for admin@gpsusa.ai.
+           Free tier: 250 submissions/month. Manage at https://web3forms.com
+           To rotate the key, replace the value of the access_key input below. -->
+      <input type="hidden" name="access_key" id="fAccessKey" value="cd154cdf-2cf1-409e-85b3-86eeb777c640">
+      <input type="hidden" name="from_name" value="GPSUSA.ai Website">
+      <input type="hidden" name="subject" id="fSubject" value="GPSUSA.ai — New Inquiry">
+      <input type="hidden" name="Intent" id="fIntentHidden" value="General Inquiry">
+      <input type="hidden" name="redirect" value="false">
+      <!-- honeypot for spam bots -->
+      <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+
+      <div class="modal-field">
+        <label for="fName">Name<span class="req">*</span></label>
+        <input type="text" id="fName" name="name" required autocomplete="name">
+      </div>
+      <div class="modal-field">
+        <label for="fEmail">Email<span class="req">*</span></label>
+        <input type="email" id="fEmail" name="email" required autocomplete="email">
+      </div>
+      <div class="modal-field">
+        <label for="fPhone">Phone <span style="color:var(--text-mute);text-transform:none;letter-spacing:0;">(optional)</span></label>
+        <input type="tel" id="fPhone" name="phone" autocomplete="tel">
+      </div>
+      <div class="modal-field">
+        <label for="fMessage">Message</label>
+        <textarea id="fMessage" name="message" placeholder="Fleet size, primary workloads, the question you want answered."></textarea>
+      </div>
+      <div class="modal-status" id="modalStatus"></div>
+      <div class="modal-actions">
+        <button type="submit" class="modal-submit" id="modalSubmitBtn">Send</button>
+      </div>
+    </form>
+
+    <div class="modal-success" id="modalSuccess">
+      <div class="modal-success-mark">✓</div>
+      <div class="modal-success-title">Message sent.</div>
+      <div class="modal-success-body">Thank you. We've received your message and will respond within one business day. For urgent matters, call <a href="tel:+17184879738" style="color:var(--gold);">+1 (718) 487-9738</a>.</div>
+    </div>
+
+    <div class="modal-fallback">
+      <div class="modal-fallback-label">Or contact us directly</div>
+      <div class="modal-fallback-row">
+        <button type="button" class="modal-fallback-copy" data-copy="admin@gpsusa.ai">admin@gpsusa.ai <span class="copy-hint" id="copyHint">click to copy</span></button>
+        <a href="tel:+17184879738">+1 (718) 487-9738</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // scroll-reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // contact modal
+  (function() {
+    const overlay = document.getElementById('contactModal');
+    const closeBtn = document.getElementById('modalCloseBtn');
+    const titleEl = document.getElementById('modalTitle');
+    const eyebrowEl = document.getElementById('modalEyebrow');
+    const subEl = document.getElementById('modalSub');
+    const form = document.getElementById('contactForm');
+    const subjectField = document.getElementById('fSubject');
+    const intentField = document.getElementById('fIntentHidden');
+
+    const subBlurbs = {
+      'Strategic Assessment': 'A defensible reading of where your fleet stands on the TSD curve, what the structural waste looks like, and what economic governance would enforce first.',
+      'Infrastructure Diagnostic': 'A technical read of decode behavior, scheduler stability, and routing economics on your live fleet — translated into a remediation order of operations.',
+      'Executive Discussion': 'A board-level conversation on inference economics, capital allocation, and defensibility of AI infrastructure investments.',
+      'General Inquiry': 'Tell us what you want to talk about. We respond within one business day.'
+    };
+
+    function openModal(intent, audience) {
+      const safeIntent = intent || 'General Inquiry';
+      titleEl.textContent = safeIntent;
+      eyebrowEl.textContent = audience || 'Engagement';
+      subEl.textContent = subBlurbs[safeIntent] || subBlurbs['General Inquiry'];
+      // wire the intent into the email so it arrives tagged
+      subjectField.value = 'GPSUSA.ai — ' + safeIntent;
+      intentField.value = safeIntent;
+      // reset form/success state in case modal was opened after a prior send
+      form.style.display = '';
+      form.reset();
+      subjectField.value = 'GPSUSA.ai — ' + safeIntent;
+      intentField.value = safeIntent;
+      const successDiv = document.getElementById('modalSuccess');
+      if (successDiv) successDiv.classList.remove('show');
+      const statusDiv = document.getElementById('modalStatus');
+      if (statusDiv) { statusDiv.textContent = ''; statusDiv.className = 'modal-status'; }
+      const sBtn = document.getElementById('modalSubmitBtn');
+      if (sBtn) { sBtn.disabled = false; sBtn.textContent = 'Send'; }
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => document.getElementById('fName').focus(), 250);
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-modal-open]').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        openModal(el.dataset.intent, el.dataset.audience);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (ev) => {
+      if (ev.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+    });
+
+    // Web3Forms AJAX submission — works without a third-party redirect, stays in modal.
+    const submitBtn = document.getElementById('modalSubmitBtn');
+    const statusEl = document.getElementById('modalStatus');
+    const successEl = document.getElementById('modalSuccess');
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      statusEl.textContent = '';
+      statusEl.className = 'modal-status';
+
+      // basic client-side validation
+      const name = document.getElementById('fName').value.trim();
+      const email = document.getElementById('fEmail').value.trim();
+      if (!name || !email) {
+        statusEl.textContent = 'Name and email are required.';
+        statusEl.classList.add('error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          form.style.display = 'none';
+          successEl.classList.add('show');
+        } else {
+          statusEl.textContent = (data && data.message)
+            ? 'Could not send: ' + data.message + ' — please email admin@gpsusa.ai directly.'
+            : 'Could not send right now — please email admin@gpsusa.ai directly.';
+          statusEl.classList.add('error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send';
+        }
+      } catch (err) {
+        statusEl.textContent = 'Network error — please email admin@gpsusa.ai directly.';
+        statusEl.classList.add('error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send';
+      }
+    });
+
+    // Copy-to-clipboard for the fallback email pill (avoids ANY mailto: trigger).
+    document.querySelectorAll('.modal-fallback-copy').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.dataset.copy || '';
+        const hint = btn.querySelector('.copy-hint');
+        const restore = hint ? hint.textContent : '';
+        const flash = () => {
+          if (hint) hint.textContent = 'copied';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            if (hint) hint.textContent = restore;
+            btn.classList.remove('copied');
+          }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(flash).catch(() => {
+            // fallback for older browsers
+            const ta = document.createElement('textarea');
+            ta.value = text; document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); flash(); } catch (_) {}
+            document.body.removeChild(ta);
+          });
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); flash(); } catch (_) {}
+          document.body.removeChild(ta);
+        }
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
